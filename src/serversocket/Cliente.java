@@ -15,12 +15,9 @@ public class Cliente extends conexion
             //Flujo de datos hacia el servidor
             salidaServidor = new DataOutputStream(cs.getOutputStream());
 
-            //Se enviarán dos mensajes
-            for (int i = 0; i < 2; i++)
-            {
-                //Se escribe en el servidor usando su flujo de datos
-                salidaServidor.writeUTF("Este es el mensaje número " + (i+1) + "\n");
-            }
+
+            //Se escribe en el servidor usando su flujo de datos
+            salidaServidor.writeUTF("Este es el mensaje número " );
 
             cs.close();//Fin de la conexión
 
