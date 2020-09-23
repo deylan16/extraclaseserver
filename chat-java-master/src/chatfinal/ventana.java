@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 public class ventana {
     JFrame frame;
+    String nombre;
     JPanel construyePanelRedactaryChat, construyePanelCoversaciones,chat,Redactar;
     JButton btenviar;
     JTextField entradamensaje;
@@ -56,7 +57,8 @@ public class ventana {
     }
 
     void construyeVentana(){
-        frame =new JFrame("Cliente ");
+        nombre = "jose";
+        frame =new JFrame(nombre);
         frame.setLayout(new GridLayout(1,2,8,8));
         frame.add(construyePanelCoversaciones);
         frame.add(construyePanelRedactaryChat);

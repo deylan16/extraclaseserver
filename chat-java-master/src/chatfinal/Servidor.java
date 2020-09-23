@@ -31,107 +31,26 @@ public class Servidor {
     private ServerSocket serverSocket;
     private DataInputStream bufferDeEntrada = null;
     private DataOutputStream bufferDeSalida = null;
-    Scanner escaner = new Scanner(System.in);
     final String COMANDO_TERMINACION = "salir()";
 
-    public void levantarConexion(int puerto) {
+    public void levantarConexion(int puerto,Cliente clien) {
         try {
             serverSocket = new ServerSocket(puerto);
-            mostrarTexto("Esperando conexión entrante en el puerto " + String.valueOf(puerto) + "...");
-            socket = serverSocket.accept();
-            mostrarTexto("Conexión establecida con: " + socket.getInetAddress().getHostName() + "\n\n\n");
+            System.out.println( "Esperando conexión entrante en el puerto " + String.valueOf(puerto) + "...");
+            while (true) {
+                socket = serverSocket.accept();
+                Thread hiloParaTratarElCliente = new HiloParaTratarElCliente(socket, puerto,clien);
+                hiloParaTratarElCliente.start();
+            }
         } catch (Exception e) {
-            mostrarTexto("Error en levantarConexion(): " + e.getMessage());
-            System.exit(0);
+            puerto += 1;
+            levantarConexion(puerto,clien);
         }
     }
-    public void flujos() {
-        try {
-            bufferDeEntrada = new DataInputStream(socket.getInputStream());
-            bufferDeSalida = new DataOutputStream(socket.getOutputStream());
-            bufferDeSalida.flush();
-        } catch (IOException e) {
-            mostrarTexto("Error en la apertura de flujos");
-        }
-    }
-
-    public void recibirDatos() {
-        String st = "";
-        try {
-            do {
-                st = (String) bufferDeEntrada.readUTF();
-                mostrarTexto("\n[Cliente] => " + st);
-                System.out.print("\n[Usted] => ");
-                enviar(st);
-            } while (!st.equals(COMANDO_TERMINACION));
-        } catch (IOException e) {
-            cerrarConexion();
-        }
-    }
-
-
-    public void enviar(String s) {
-        try {
-            if(s == "[Usted] => adios"){
-                cerrarConexion();
-            }
-            else {
-                bufferDeSalida.writeUTF(s);
-                bufferDeSalida.flush();
-            }
-        } catch (IOException e) {
-            mostrarTexto("Error en enviar(): " + e.getMessage());
-        }
-    }
-
-    public static void mostrarTexto(String s) {
-        System.out.print(s);
-    }
-
-    public void escribirDatos() {
-        while (true) {
-            System.out.print("[Usted] => ");
-            enviar(escaner.nextLine());
-        }
-    }
-
-    public void cerrarConexion() {
-        try {
-            bufferDeEntrada.close();
-            bufferDeSalida.close();
-            socket.close();
-        } catch (IOException e) {
-            mostrarTexto("Excepción en cerrarConexion(): " + e.getMessage());
-        } finally {
-            mostrarTexto("Conversación finalizada....");
-            System.exit(0);
-
-        }
-    }
-
-    public void ejecutarConexion(int puerto) {
-        Thread hilo = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        levantarConexion(puerto);
-                        flujos();
-                        recibirDatos();
-                    } finally {
-                        cerrarConexion();
-                    }
-                }
-            }
-        });
-        hilo.start();
-    }
-
-    public static void main(String[] args) throws IOException {
-        Servidor s = new Servidor();
-        Scanner sc = new Scanner(System.in);
-
-        s.ejecutarConexion(4000);
-        s.escribirDatos();
-    }
+//    public static void main(String[] args) throws IOException {
+//        Servidor s = new Servidor();
+//
+//
+//        s.levantarConexion(4000);
+//    }
 }

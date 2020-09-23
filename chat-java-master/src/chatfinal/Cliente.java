@@ -1,20 +1,15 @@
-package chatfinal;/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-import javax.swing.*;
+package chatfinal;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
 import java.io.*;
-import java.util.Scanner;
+
 public class Cliente extends ventana{
 
     private Socket socket;
     private DataInputStream bufferDeEntrada = null;
     private DataOutputStream bufferDeSalida = null;
-    Scanner teclado = new Scanner(System.in);
     final String COMANDO_TERMINACION = "salir()";
 
     public Cliente(
@@ -94,7 +89,6 @@ public class Cliente extends ventana{
             });
             hilo.start();
         }
-
         public void recibirDatos() {
             String st = "";
             try {
@@ -108,21 +102,16 @@ public class Cliente extends ventana{
             } catch (IOException e) {}
         }
 
-        public void escribirDatos() {
-            String entrada = "";
-            while (true) {
-                System.out.print("[Usted] => ");
-                entrada = teclado.nextLine();
-                if(entrada.length() > 0)
-                    enviar(entrada);
-            }
-        }
 
-        public static void main(String[] argumentos) {
+        public static void main(String[] argumentos) throws IOException {
             Cliente cliente = new Cliente();
+
+            enciende server = new enciende(cliente);
+            server.start();
             cliente.abreventana();
-            cliente.ejecutarConexion("127.0.0.1", 4000);
-            cliente.escribirDatos();
+            cliente.frame.setTitle("deylan");
+            cliente.ejecutarConexion("127.0.0.1", 4001
+            );
 
         }
     }
