@@ -1,13 +1,12 @@
 package chatfinal;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.*;
 import java.io.*;
 
 public class Cliente extends ventana{
 
     private Socket socket;
+    public int puerto = 0;
     private DataInputStream bufferDeEntrada = null;
     private DataOutputStream bufferDeSalida = null;
     final String COMANDO_TERMINACION = "salir()";
@@ -19,15 +18,11 @@ public class Cliente extends ventana{
             try {
                 socket = new Socket(ip, puerto);
                 mostrarTexto("Conectado a :" + socket.getInetAddress().getHostName());
-                btenviar.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        enviar(entradamensaje.getText());
-                        entradamensaje.setText(null);
-
-
-                    }
+                btenviar.addActionListener(e -> {
+                    enviar(entradamensaje.getText());
+                    entradamensaje.setText(null);
                 });
+
             } catch (Exception e) {
                 mostrarTexto("Excepción al levantar conexión: " + e.getMessage());
                 System.exit(0);
@@ -74,7 +69,7 @@ public class Cliente extends ventana{
             }
         }
 
-        public void ejecutarConexion(String ip, int puerto) {
+        public void ejecutarConexion(String ip) {
             Thread hilo = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -110,8 +105,8 @@ public class Cliente extends ventana{
             server.start();
             cliente.abreventana();
             cliente.frame.setTitle("deylan");
-            cliente.ejecutarConexion("127.0.0.1", 4001
-            );
+            cliente.ejecutarConexion("127.0.0.1");
+
 
         }
     }

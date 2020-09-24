@@ -65,19 +65,17 @@ public class HiloParaTratarElCliente extends Thread {
     public void cerrarConexion() throws IOException {
         bufferDeEntrada.close();
         bufferDeSalida.close();
+        cs.close();
 
     }
     public void run() {
         try {
-            DataOutputStream salidaCliente = new DataOutputStream(cs.getOutputStream());
-            while (true) {
                 try {
                     flujos();
                     recibirDatos();
                 } finally {
                     cerrarConexion();
                 }
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }

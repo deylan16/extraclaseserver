@@ -1,23 +1,18 @@
 package chatfinal;
 
-import chatfinal.Cliente;
-import chatfinal.Servidor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Scanner;
 
 public class ventana {
-    JFrame frame;
+    JFrame frame,frame2;
     String nombre;
-    JPanel construyePanelRedactaryChat, construyePanelCoversaciones,chat,Redactar;
-    JButton btenviar;
-    JTextField entradamensaje;
+    JPanel construyePanelRedactaryChat, construyePanelCoversaciones,chat,Redactar,vredactar;
+    JButton btenviar,btredactar,btconfirmar;
+    JTextField entradamensaje,cpuerto;
     JTextArea tchat;
     JScrollPane conver;
-    JLabel etiqueta;
+    JLabel etiqueta,epuerto;
 
     public void abreventana(){
         construyePanelRedactaryChat();
@@ -54,6 +49,25 @@ public class ventana {
         etiqueta = new JLabel();
         etiqueta.setText("Conversaciones");
         construyePanelCoversaciones.add(etiqueta);
+        btredactar = new JButton("redactar");
+        construyePanelCoversaciones.add(btredactar);
+        btredactar.addActionListener(e -> {
+            frame2 = new JFrame("REDACTAR");
+            frame2.setLayout(new GridLayout(1,1,8,8));
+            vredactar = new JPanel();
+            vredactar.setLayout(new GridLayout(2, 2, 8, 8));
+            epuerto = new JLabel();
+            epuerto.setText("Para(puerto):");
+            vredactar.add(epuerto);
+            cpuerto = new JTextField(2);
+            vredactar.add(cpuerto);
+            btconfirmar = new JButton("Confirmar");
+            vredactar.add(btconfirmar);
+            frame2.add(vredactar);
+            frame2.pack();
+            frame2.setVisible(true);
+
+        });
     }
 
     void construyeVentana(){
