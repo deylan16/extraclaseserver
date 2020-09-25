@@ -33,19 +33,22 @@ public class Servidor {
     private DataOutputStream bufferDeSalida = null;
     final String COMANDO_TERMINACION = "salir()";
 
-    public void levantarConexion(int puerto, Cliente clien) {
+    public void levantarConexion(int puerto, ventana vent) {
         try {
             serverSocket = new ServerSocket(puerto);
             System.out.println("Esperando conexión entrante en el puerto " + String.valueOf(puerto) + "...");
             while (true) {
-                clien.puerto = puerto;
+                vent.puerto = puerto;
+                vent.frame.setTitle(String.valueOf(vent.puerto));
                 socket = serverSocket.accept();
-                Thread hiloParaTratarElCliente = new HiloParaTratarElCliente(socket, puerto, clien);
+                Thread hiloParaTratarElCliente = new HiloParaTratarElCliente(socket, puerto, vent);
                 hiloParaTratarElCliente.start();
+
+
             }
         } catch (Exception e) {
             puerto += 1;
-            levantarConexion(puerto, clien);
+            levantarConexion(puerto, vent);
         }
     }
 }

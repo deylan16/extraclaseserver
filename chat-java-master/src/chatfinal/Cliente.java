@@ -3,25 +3,22 @@ package chatfinal;
 import java.net.*;
 import java.io.*;
 
-public class Cliente extends ventana{
-
+public class Cliente {
+    ventana vent;
     private Socket socket;
-    public int puerto = 0;
     private DataInputStream bufferDeEntrada = null;
     private DataOutputStream bufferDeSalida = null;
     final String COMANDO_TERMINACION = "salir()";
 
-    public Cliente(
-            ){super();}
+    public Cliente(ventana vent) {
+        this.vent = vent;
+    }
 
-        public void levantarConexion(String ip, int puerto) {
+
+    public void levantarConexion(String ip, int puertot) {
             try {
-                socket = new Socket(ip, puerto);
+                socket = new Socket(ip, puertot);
                 mostrarTexto("Conectado a :" + socket.getInetAddress().getHostName());
-                btenviar.addActionListener(e -> {
-                    enviar(entradamensaje.getText());
-                    entradamensaje.setText(null);
-                });
 
             } catch (Exception e) {
                 mostrarTexto("Excepción al levantar conexión: " + e.getMessage());
@@ -43,17 +40,17 @@ public class Cliente extends ventana{
             }
         }
 
-        public void enviar(String s) {
-            try {
-                bufferDeSalida.writeUTF(s);
-                bufferDeSalida.flush();
+        public void enviar(String str) throws IOException {
                 String textonuevo,textoviejo;
-                textoviejo = tchat.getText();
-                textonuevo ="\n" + "Tu:" + s;
-                tchat.setText(textoviejo +  textonuevo );
-            } catch (IOException e) {
-                mostrarTexto("IOException on enviar");
-            }
+                textoviejo = vent.tchat.getText();
+                textonuevo ="\n" + "tu:" + str;
+                vent.tchat.setText(textoviejo +  textonuevo );
+                Socket s = new Socket("127.0.0.1", vent.puerto);
+                bufferDeSalida.writeUTF(vent.frame.getTitle()+"@"+str);
+                bufferDeSalida.flush();
+                s.close();
+                vent.entradamensaje.setText(null);
+
         }
 
         public void cerrarConexion() {
@@ -69,12 +66,12 @@ public class Cliente extends ventana{
             }
         }
 
-        public void ejecutarConexion(String ip) {
+        public void ejecutarConexion(String ip, int puertof) {
             Thread hilo = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        levantarConexion(ip, puerto);
+                        levantarConexion(ip, puertof);
                         abrirFlujos();
                         recibirDatos();
                     } finally {
@@ -90,24 +87,14 @@ public class Cliente extends ventana{
                 do {
                     st = (String) bufferDeEntrada.readUTF();
                     String textonuevo,textoviejo;
-                    textoviejo = tchat.getText();
+                    textoviejo = vent.tchat.getText();
                     textonuevo ="\n" + "Servidor:" + st;
-                    tchat.setText(textoviejo +  textonuevo );
+                    vent.tchat.setText(textoviejo +  textonuevo );
                 } while (!st.equals(COMANDO_TERMINACION));
             } catch (IOException e) {}
         }
 
 
-        public static void main(String[] argumentos) throws IOException {
-            Cliente cliente = new Cliente();
 
-            enciende server = new enciende(cliente);
-            server.start();
-            cliente.abreventana();
-            cliente.frame.setTitle("deylan");
-            cliente.ejecutarConexion("127.0.0.1");
-
-
-        }
     }
 

@@ -3,8 +3,13 @@ package chatfinal;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Scanner;
 
 public class ventana {
+    int puerto = 0;
+
     JFrame frame,frame2;
     String nombre;
     JPanel construyePanelRedactaryChat, construyePanelCoversaciones,chat,Redactar,vredactar;
@@ -13,13 +18,17 @@ public class ventana {
     JTextArea tchat;
     JScrollPane conver;
     JLabel etiqueta,epuerto;
+    Cliente client;
 
-    public void abreventana(){
+
+    public void abreventana(Cliente client){
+        this.client = client;
         construyePanelRedactaryChat();
         construyePanelCoversaciones();
         construyeVentana();}
 
     void construyePanelRedactaryChat(){
+        btconfirmar = new JButton("Confirmar");
         construyePanelRedactaryChat = new JPanel ();
         construyePanelRedactaryChat.setLayout(new GridLayout(2,1,8,8));
         //panel para mostrar el chat
@@ -38,6 +47,14 @@ public class ventana {
         Redactar.add(entradamensaje);
         btenviar = new JButton("Enviar");
         Redactar.add(btenviar);
+        btenviar.addActionListener(e -> {
+            try {
+                client.enviar(entradamensaje.getText());
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+
+        });
         construyePanelRedactaryChat.add(Redactar);
 
     }
@@ -61,7 +78,7 @@ public class ventana {
             vredactar.add(epuerto);
             cpuerto = new JTextField(2);
             vredactar.add(cpuerto);
-            btconfirmar = new JButton("Confirmar");
+
             vredactar.add(btconfirmar);
             frame2.add(vredactar);
             frame2.pack();
@@ -71,7 +88,7 @@ public class ventana {
     }
 
     void construyeVentana(){
-        nombre = "jose";
+        nombre = "";
         frame =new JFrame(nombre);
         frame.setLayout(new GridLayout(1,2,8,8));
         frame.add(construyePanelCoversaciones);

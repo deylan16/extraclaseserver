@@ -9,21 +9,22 @@ import java.io.IOException;
 public class HiloParaTratarElCliente extends Thread {
     Socket cs;
     String puerto;
-    Cliente client;
+    ventana vent;
     private DataInputStream bufferDeEntrada = null;
     private DataOutputStream bufferDeSalida = null;
     final String COMANDO_TERMINACION = "salir()";
-    public HiloParaTratarElCliente (Socket cs,int port, Cliente client) {
+    public HiloParaTratarElCliente (Socket cs,int port, ventana vent) {
 
         this.cs = cs;
         this.puerto = String.valueOf(port);
-        this.client = client;
+        this.vent = vent;
     }
 
     public void flujos() throws IOException {
         bufferDeEntrada = new DataInputStream(cs.getInputStream());
         bufferDeSalida = new DataOutputStream(cs.getOutputStream());
         bufferDeSalida.flush();
+
     }
 
     public void recibirDatos() throws IOException {
@@ -31,16 +32,22 @@ public class HiloParaTratarElCliente extends Thread {
         try {
             do {
                 st = (String) bufferDeEntrada.readUTF();
-                mostrarTexto("\n[Cliente] => " + st);
-                System.out.print("\n[Usted] => ");
                 String textonuevo,textoviejo;
-                textoviejo = client.tchat.getText();
-                textonuevo ="\n" + "Servidor:" + st;
-                client.tchat.setText(textoviejo +  textonuevo );
+                textoviejo = vent.tchat.getText();
+                String[] Divido = procesamensaje(st);
+                textonuevo ="\n" + Divido[0]+ ":" + Divido[1];
+                vent.tchat.setText(textoviejo +  textonuevo );
             } while (!st.equals(COMANDO_TERMINACION));
         } catch (IOException e) {
             cerrarConexion();
         }
+    }
+    public String[] procesamensaje(String men){
+        String menArray[] = men.split("\\@");
+        return menArray;
+
+
+
     }
 
 
@@ -65,7 +72,7 @@ public class HiloParaTratarElCliente extends Thread {
     public void cerrarConexion() throws IOException {
         bufferDeEntrada.close();
         bufferDeSalida.close();
-        cs.close();
+
 
     }
     public void run() {
