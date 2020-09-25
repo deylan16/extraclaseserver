@@ -4,6 +4,10 @@ import java.net.Socket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class HiloParaTratarElCliente extends Thread {
@@ -13,6 +17,7 @@ public class HiloParaTratarElCliente extends Thread {
     private DataInputStream bufferDeEntrada = null;
     private DataOutputStream bufferDeSalida = null;
     final String COMANDO_TERMINACION = "salir()";
+
     public HiloParaTratarElCliente (Socket cs,int port, ventana vent) {
 
         this.cs = cs;
@@ -37,6 +42,8 @@ public class HiloParaTratarElCliente extends Thread {
                 String[] Divido = procesamensaje(st);
                 textonuevo ="\n" + Divido[0]+ ":" + Divido[1];
                 vent.tchat.setText(textoviejo +  textonuevo );
+                vent.agregamensaje(Divido[0], Divido[0]+ ":"+Divido[1]);
+
             } while (!st.equals(COMANDO_TERMINACION));
         } catch (IOException e) {
             cerrarConexion();
@@ -45,10 +52,8 @@ public class HiloParaTratarElCliente extends Thread {
     public String[] procesamensaje(String men){
         String menArray[] = men.split("\\@");
         return menArray;
-
-
-
     }
+
 
 
     public void enviar(String s) {

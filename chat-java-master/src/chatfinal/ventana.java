@@ -5,7 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.*;
+import java.util.List;
 
 public class ventana {
     int puerto = 0;
@@ -19,6 +20,10 @@ public class ventana {
     JScrollPane conver;
     JLabel etiqueta,epuerto;
     Cliente client;
+    JList messageList;
+    Map<String, List<String>> messageDB = new HashMap<>();
+
+    java.util.List<String> messages = new ArrayList<String>();
 
 
     public void abreventana(Cliente client){
@@ -68,6 +73,10 @@ public class ventana {
         construyePanelCoversaciones.add(etiqueta);
         btredactar = new JButton("redactar");
         construyePanelCoversaciones.add(btredactar);
+        messageList = new JList();
+        messageList.setFont(new Font("Arial", Font.ITALIC, 10));
+        messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        construyePanelCoversaciones.add(messageList);
         btredactar.addActionListener(e -> {
             frame2 = new JFrame("REDACTAR");
             frame2.setLayout(new GridLayout(1,1,8,8));
@@ -78,12 +87,31 @@ public class ventana {
             vredactar.add(epuerto);
             cpuerto = new JTextField(2);
             vredactar.add(cpuerto);
-
             vredactar.add(btconfirmar);
             frame2.add(vredactar);
             frame2.pack();
             frame2.setVisible(true);
 
+        });
+    }
+    void agregamensaje(String puert,String mensaje){
+        ChatMessage conversacion = new ChatMessage(puert, mensaje);
+
+        if (messageDB.containsKey(conversacion.getSender())) {
+            messageDB.get(conversacion.getSender()).add(conversacion.getPayload());
+        } else {
+            java.util.List<String> messageForSender = new ArrayList<>();
+            messageForSender.add(conversacion.getPayload());
+            messageDB.put(conversacion.getSender(), messages);
+        }
+        messageList.setListData(messageDB.keySet().toArray());
+        messageList.addListSelectionListener(e -> {
+            List<String> muestra = messageDB.get(messageList.getSelectedValue());
+            String chat = "";
+
+            for (int i = 0; i  < muestra.size(); ++i){
+            chat += "\n"+ muestra.get(i);}
+            tchat.setText(chat);
         });
     }
 

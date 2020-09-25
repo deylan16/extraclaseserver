@@ -50,6 +50,7 @@ public class Cliente {
                 bufferDeSalida.flush();
                 s.close();
                 vent.entradamensaje.setText(null);
+                vent.agregamensaje(String.valueOf(vent.puerto),  "Tu:"+str);
 
         }
 
