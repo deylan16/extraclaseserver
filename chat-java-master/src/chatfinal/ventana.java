@@ -1,19 +1,21 @@
 package chatfinal;
 
 
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.*;
 import java.util.List;
 
 public class ventana {
     int puerto = 0;
+    int puertoactual = 0;
 
     JFrame frame,frame2;
     String nombre;
-    JPanel construyePanelRedactaryChat, construyePanelCoversaciones,chat,Redactar,vredactar;
+    JPanel construyePanelRedactaryChat, construyePanelCoversaciones,chat,Redactar,vredactar,construyePanelCoversaciones1;
     JButton btenviar,btredactar,btconfirmar;
     JTextField entradamensaje,cpuerto;
     JTextArea tchat;
@@ -33,7 +35,6 @@ public class ventana {
         construyeVentana();}
 
     void construyePanelRedactaryChat(){
-        btconfirmar = new JButton("Confirmar");
         construyePanelRedactaryChat = new JPanel ();
         construyePanelRedactaryChat.setLayout(new GridLayout(2,1,8,8));
         //panel para mostrar el chat
@@ -67,17 +68,31 @@ public class ventana {
 
     void construyePanelCoversaciones() {
         construyePanelCoversaciones = new JPanel();
-        construyePanelCoversaciones.setLayout(new GridLayout(7, 1, 8, 8));
+        construyePanelCoversaciones.setLayout(new GridLayout(2, 1, 8, 8));
+        construyePanelCoversaciones1 = new JPanel();
+        construyePanelCoversaciones1.setLayout(new GridLayout(3, 1, 8, 8));
         etiqueta = new JLabel();
         etiqueta.setText("Conversaciones");
-        construyePanelCoversaciones.add(etiqueta);
+        construyePanelCoversaciones1.add(etiqueta);
         btredactar = new JButton("redactar");
-        construyePanelCoversaciones.add(btredactar);
+        construyePanelCoversaciones1.add(btredactar);
+        construyePanelCoversaciones.add(construyePanelCoversaciones1);
         messageList = new JList();
         messageList.setFont(new Font("Arial", Font.ITALIC, 10));
         messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        messageList.addListSelectionListener(e -> {
+            puertoactual = Integer.parseInt(String.valueOf(messageList.getSelectedValue()));
+            tchat.setText(messageDB.get(messageList.getSelectedValue()).get(0));
+
+        });
         construyePanelCoversaciones.add(messageList);
         btredactar.addActionListener(e -> {
+            btconfirmar = new JButton("Confirmar");
+            btconfirmar.addActionListener(r -> { ;
+                puertoactual = Integer.parseInt(cpuerto.getText());
+                frame2.setVisible(false);
+
+            });
             frame2 = new JFrame("REDACTAR");
             frame2.setLayout(new GridLayout(1,1,8,8));
             vredactar = new JPanel();
@@ -95,24 +110,18 @@ public class ventana {
         });
     }
     void agregamensaje(String puert,String mensaje){
-        ChatMessage conversacion = new ChatMessage(puert, mensaje);
 
-        if (messageDB.containsKey(conversacion.getSender())) {
-            messageDB.get(conversacion.getSender()).add(conversacion.getPayload());
+        if (messageDB.containsKey(puert)) {
+            messageDB.get(puert).get(0);
+            messageDB.get(puert).add(0,messageDB.get(puert).get(0) +"\n"+ mensaje);
+
         } else {
             java.util.List<String> messageForSender = new ArrayList<>();
-            messageForSender.add(conversacion.getPayload());
-            messageDB.put(conversacion.getSender(), messages);
+            messageForSender.add(mensaje);
+            messageDB.put(puert, messageForSender);
         }
         messageList.setListData(messageDB.keySet().toArray());
-        messageList.addListSelectionListener(e -> {
-            List<String> muestra = messageDB.get(messageList.getSelectedValue());
-            String chat = "";
 
-            for (int i = 0; i  < muestra.size(); ++i){
-            chat += "\n"+ muestra.get(i);}
-            tchat.setText(chat);
-        });
     }
 
     void construyeVentana(){
@@ -124,6 +133,4 @@ public class ventana {
         frame.pack();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);}
-
-
 }

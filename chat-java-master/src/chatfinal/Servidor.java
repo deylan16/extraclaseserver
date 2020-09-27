@@ -29,9 +29,8 @@ public class Servidor {
 
     private Socket socket;
     private ServerSocket serverSocket;
-    private DataInputStream bufferDeEntrada = null;
-    private DataOutputStream bufferDeSalida = null;
-    final String COMANDO_TERMINACION = "salir()";
+
+
 
     public void levantarConexion(int puerto, ventana vent) {
         try {
